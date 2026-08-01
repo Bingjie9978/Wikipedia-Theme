@@ -374,8 +374,8 @@ margin: 0px; /* close gaps in infobox when info callout title is hidden */
 }
 .callout {
   overflow: hidden;
-  border: 1px solid rgba(var(--callout-color), 30%);
-  background-color: rgba(var(--callout-color), 10%);
+  border: 1px solid color-mix(in srgb, var(--callout-color) 30%, transparent);
+  background-color: color-mix(in srgb, var(--callout-color) 10%, transparent);
   margin: 1em;
   color: var(--text-normal);
   padding: 0.2em;
@@ -393,7 +393,7 @@ margin: 0px; /* close gaps in infobox when info callout title is hidden */
 
 .callout:not([data-callout="info"]),
 .info-normal .callout[data-callout="info"] {
-  --h6-background: rgba(var(--callout-color), 20%); /* make header 6 match callout color */
+  --h6-background: color-mix(in srgb, var(--callout-color) 20%, transparent); /* make header 6 match callout color */
 }
 
 
@@ -407,7 +407,7 @@ margin: 0px; /* close gaps in infobox when info callout title is hidden */
   padding:0.2em 0.4em;
   font-size: var(--h5-size);
   border: 1px solid var(--background-modifier-hover);
-  background-color: rgba(var(--callout-color), 20%);
+  background-color: color-mix(in srgb, var(--callout-color) 20%, transparent);
   text-align: center;
 }
 .callout-title-inner {
