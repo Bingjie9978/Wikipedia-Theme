@@ -81,7 +81,7 @@ body{
 
 
 /* special h6 class */
-.special-h6 h6, .special-h6 .HyperMD-header-6  {
+body:not(.plain-h6) h6, body:not(.plain-h6) .HyperMD-header-6 {
   background-color: var(--h6-background);
   text-align: center;
   margin-bottom: 0.2;
@@ -176,7 +176,8 @@ body {
   --infobox-margin-left: 1em 1em 1em 0px;
 }
 /* hide frontmatter option */
-.hide-frontmatter .frontmatter-container {
+.hide-frontmatter .frontmatter-container,
+.hide-frontmatter .markdown-reading-view .metadata-container {
   display: none;
 }
 
@@ -295,7 +296,8 @@ body {
   margin: 1em 0;
   background-color: var(--background-secondary-alt);
   max-width: 100%;
-  word-break: break-all;
+  /* break only words that do not fit, not every word (issue #25) */
+  overflow-wrap: break-word;
 }
 
 
@@ -334,6 +336,19 @@ body:not(.info-normal) .callout[data-callout="info"]:not([data-callout-metadata~
   margin: var(--infobox-margin);
   background-color: var(--background-secondary-alt);
   border: 1px solid var(--background-modifier-border);
+}
+
+/* Phones: no floating; infoboxes and images take the full width (issue #23) */
+.is-phone .markdown-rendered .callout:is([data-callout="info"], [data-callout-metadata~="info"], [data-callout-metadata~="right"], [data-callout-metadata~="left"]) {
+  float: none;
+  width: 100%;
+  margin: 1em 0;
+}
+.is-phone .markdown-rendered img {
+  float: none !important;
+  display: block;
+  margin: 1em auto !important;
+  max-width: 100%;
 }
 
 /* callout alts */
@@ -449,12 +464,16 @@ body {
 .markdown-rendered img {
   float: right;
   margin: var(--infobox-margin);
-  width: var(--image-width);
   clear: right;
   background-color: var(--background-secondary-alt);
   padding: 5px;
   border: 1px var(--background-modifier-border) solid;
   max-width: var(--img-max-width);
+}
+
+/* theme width only when the note gives no size, e.g. ![[image.png|100]] (issues #3, #26) */
+.markdown-rendered img:not([width]) {
+  width: var(--image-width);
 }
 
 /* don't float images inside community themes */
@@ -514,12 +533,13 @@ margin: 1em 0px;
   float: right !important;
   clear: right !important;
   margin: var(--infobox-margin) !important;
-  width: var(--image-width) !important;
 }
 .markdown-rendered img[alt*=left] {
   float: left !important;
   clear: left !important;
   margin: var(--infobox-margin-left) !important;
+}
+.markdown-rendered img:is([alt*=right], [alt*=left]):not([width]) {
   width: var(--image-width) !important;
 }
 .markdown-rendered img[alt*=normal],
@@ -634,7 +654,6 @@ body {
 --vault-name-font-size: 1.4em;
 --vault-name-font-weight: 500;
 --indentation-guide-width: 0px;
---nav-item-children-padding-left: 0px;
 }
 /* get rid of sidebar borders only */
 .workspace-split.mod-vertical > * > .workspace-leaf-resize-handle, .workspace-split.mod-left-split > .workspace-leaf-resize-handle {
@@ -686,7 +705,7 @@ body {
 /* folder background color */
 .nav-folder-children {
   background-color: var(--background-secondary-alt);
-  padding: 5px;
+  padding: 2px 0;
 }
 
 /* ----- Files ----- */
@@ -696,9 +715,6 @@ body {
 }
 .nav-file-title-content:hover {
   color: var(--link-color-hover);
-}
-.nav-file-title:hover {
-  background-color: transparent !important;
 }
 
 /* collapse indicator */
@@ -940,195 +956,531 @@ body {
 
 
 
+/* ------------ App UI (settings, buttons, inputs) ------------ */
+
+/* Colors follow Wikipedia's Vector skin in light mode; dark mode uses theme variables */
+body {
+  --wiki-button-bg: var(--background-secondary);
+  --wiki-button-bg-hover: var(--background-primary);
+  --wiki-button-border: var(--background-modifier-border-hover);
+  --wiki-button-border-hover: var(--text-faint);
+  --wiki-progressive: var(--interactive-accent);
+  --wiki-progressive-hover: var(--interactive-accent-hover);
+  --wiki-heading-border: var(--background-modifier-border-hover);
+}
+.theme-light {
+  --wiki-button-bg: #f8f9fa;
+  --wiki-button-bg-hover: #ffffff;
+  --wiki-button-border: #a2a9b1;
+  --wiki-button-border-hover: #72777d;
+  --wiki-progressive: #3366cc;
+  --wiki-progressive-hover: #447ff5;
+  --wiki-heading-border: #a2a9b1;
+}
+
+/* Buttons: light grey with a thin border instead of filled grey blocks */
+button:not(.clickable-icon, .mod-warning, .mod-destructive) {
+  background-color: var(--wiki-button-bg);
+  border: 1px solid var(--wiki-button-border);
+  border-radius: 2px;
+  box-shadow: none;
+  font-weight: bold;
+}
+button:not(.clickable-icon, .mod-warning, .mod-destructive):hover {
+  background-color: var(--wiki-button-bg-hover);
+  border-color: var(--wiki-button-border-hover);
+}
+button.mod-cta {
+  background-color: var(--wiki-progressive);
+  border-color: var(--wiki-progressive);
+  --text-color: #ffffff;
+}
+button.mod-cta:hover {
+  background-color: var(--wiki-progressive-hover);
+  border-color: var(--wiki-progressive-hover);
+}
+
+/* Dropdowns: bordered box with Wikipedia's expand chevron */
+body {
+  --wiki-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23c8ccd1' d='m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z'/%3E%3C/svg%3E");
+}
+.theme-light {
+  --wiki-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23202122' d='m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z'/%3E%3C/svg%3E");
+}
+select,
+.dropdown {
+  --dropdown-background: var(--wiki-button-bg);
+  --dropdown-background-hover: var(--wiki-button-bg-hover);
+  border: 1px solid var(--wiki-button-border);
+  border-radius: 2px;
+  box-shadow: none;
+  background-image: var(--wiki-chevron);
+  background-repeat: no-repeat;
+  background-position: right 0.6em center;
+  background-size: 0.7em;
+  background-blend-mode: normal;
+  padding: 0 2em 0 0.75em;
+  text-align: start;
+}
+select:hover,
+.dropdown:hover {
+  border-color: var(--wiki-button-border-hover);
+}
+
+/* Search and text inputs: square, thin border */
+input[type='search'],
+input[type='text'] {
+  border-radius: 2px;
+}
+.modal.mod-settings input[type='search'] {
+  background-color: var(--background-primary);
+  border: 1px solid var(--wiki-button-border);
+}
+
+/* Settings section headings ("Font", "Account", ...) like article headings */
+.modal.mod-settings .setting-item-heading .setting-item-name {
+  font-family: var(--h1-font);
+  font-size: 1.5em;
+  font-weight: normal;
+  color: var(--text-normal);
+}
+.modal.mod-settings .setting-group .setting-item-heading {
+  border-bottom: 1px solid var(--wiki-heading-border);
+  padding: 0 0 0.15em 0;
+  margin-bottom: 0.5em;
+}
+
+/* Settings groups: plain page instead of grey cards */
+.modal.mod-settings {
+  --setting-items-background: transparent;
+  --setting-items-padding-x: 0;
+  /* Obsidian's 20px suits card backgrounds; without cards it looks sparse */
+  --setting-items-padding-y: var(--size-4-2);
+}
+
+/* File explorer indent (Style Settings: wiki-nav-indent) */
+body {
+  --wiki-nav-indent: 16px;
+  --nav-item-padding: 4px 8px 4px 8px;
+  /* padding-start must stay non-zero; the rest of the indent is margin */
+  --nav-item-children-padding-start: 3px;
+  --nav-item-children-margin-start: calc(var(--wiki-nav-indent) - 3px);
+}
+
+/* Settings window: white title bar instead of grey */
+body.is-popout-modal {
+  --titlebar-background: var(--background-primary);
+  --titlebar-background-focused: var(--background-primary);
+}
+body.is-popout-modal .titlebar {
+  background-color: var(--background-primary) !important;
+}
+body.is-popout-modal .titlebar-text {
+  font-family: var(--font-interface);
+}
+
+/* Optional: hide icons in the settings sidebar */
+.hide-settings-icons .vertical-tab-nav-item-icon {
+  display: none;
+}
+
+/* Settings sidebar: links like Wikipedia's navigation */
+.vertical-tab-header-group-title {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding-bottom: 0.2em;
+  margin-right: var(--size-4-2);
+}
+.vertical-tab-nav-item {
+  color: var(--link-color);
+  border-radius: 0;
+}
+.vertical-tab-nav-item .vertical-tab-nav-item-icon {
+  color: var(--text-muted);
+}
+body:not(.is-phone) .vertical-tab-nav-item.is-active {
+  background-color: var(--nav-item-background-active);
+  color: var(--nav-item-color-active);
+  font-weight: var(--nav-item-weight-active);
+}
+
+/* Settings outside groups (plugin tabs, Style Settings) use the same tighter rhythm */
+.modal.mod-settings .setting-item:not(.setting-item-heading) {
+  padding-block: var(--size-4-2);
+  margin-bottom: 0;
+}
+/* On/off settings in Style Settings: a reset button is redundant */
+.modal.mod-settings .style-settings-container .setting-item:has(.checkbox-container) .extra-setting-button {
+  display: none;
+}
+
+/* Style Settings subsections: no rule; size steps down and each level is indented */
+.modal.mod-settings .setting-item-heading.style-settings-heading:not([data-level="0"]) {
+  border-bottom: none;
+  padding-block: var(--size-4-2);
+  /* Obsidian adds 24px above any heading that follows a setting */
+  margin-block: 0;
+}
+.modal.mod-settings .setting-item-heading.style-settings-heading[data-level="1"],
+.modal.mod-settings .setting-item-heading.style-settings-heading[data-level="2"] {
+  margin-top: var(--size-4-2);
+}
+.modal.mod-settings .setting-item-heading.style-settings-heading:not([data-level="0"]) .setting-item-name {
+  font-family: var(--font-interface);
+  font-weight: bold;
+}
+.modal.mod-settings .style-settings-heading[data-level="1"] .setting-item-name,
+.modal.mod-settings .style-settings-heading[data-level="2"] .setting-item-name {
+  font-size: 1.15em;
+}
+.modal.mod-settings .style-settings-heading[data-level="3"] .setting-item-name {
+  font-size: 1em;
+}
+.modal.mod-settings .style-settings-heading[data-level="4"] .setting-item-name,
+.modal.mod-settings .style-settings-heading[data-level="5"] .setting-item-name,
+.modal.mod-settings .style-settings-heading[data-level="6"] .setting-item-name {
+  font-size: 0.95em;
+  color: var(--text-muted);
+}
+.modal.mod-settings .style-settings-heading:not([data-level="0"]) + .style-settings-container {
+  padding-left: 1.25em;
+  padding-bottom: var(--size-4-2);
+}
+.modal.mod-settings .style-settings-collapse-indicator {
+  color: var(--text-muted);
+}
+
+/* Controls sized to the surrounding UI text */
+.modal.mod-settings {
+  --input-height: 26px;
+}
+.modal.mod-settings :is(input[type='text'], input[type='number'], select, .dropdown) {
+  font-size: var(--font-ui-small);
+}
+
+/* On/off toggles: a small text button reading "On" or "Off".
+   Obsidian sizes and slides the knob with .modal/.mod-macos rules of higher
+   specificity, so geometry here uses !important to keep the button still. */
+.checkbox-container {
+  box-sizing: border-box;
+  width: 3.4em !important;
+  height: auto !important;
+  padding: 1px 0;
+  font-size: var(--font-ui-smaller);
+  border: 1px solid var(--wiki-button-border);
+  border-radius: 2px;
+  background-color: var(--wiki-button-bg);
+  box-shadow: none;
+  outline: none;
+  text-align: center;
+  transition: none;
+}
+.checkbox-container::before {
+  display: none;
+}
+.checkbox-container::after {
+  content: "Off";
+  display: block;
+  position: static !important;
+  left: auto !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: inherit;
+  font-weight: bold;
+  line-height: 1.4;
+}
+.checkbox-container.is-enabled {
+  background-color: var(--wiki-progressive);
+  border-color: var(--wiki-progressive);
+}
+.checkbox-container.is-enabled::after {
+  content: "On";
+  color: #ffffff;
+}
+.checkbox-container:hover {
+  border-color: var(--wiki-button-border-hover);
+}
+.checkbox-container.is-enabled:hover {
+  background-color: var(--wiki-progressive-hover);
+  border-color: var(--wiki-progressive-hover);
+}
+
+/* Slider: thin track with a handle drawn like a selected Wikipedia radio button
+   (white centre inside a blue ring). body.mod-macos overrides Obsidian's macOS
+   pill-shaped knob. */
+body,
+body.mod-macos {
+  --slider-track-height: 3px;
+  --slider-thumb-width: 14px;
+  --slider-thumb-height: 14px;
+  --slider-thumb-width-active: 14px;
+  --slider-thumb-height-active: 14px;
+  --slider-thumb-y: -4px;
+  --slider-thumb-y-active: -4px;
+  --slider-thumb-radius: 50%;
+  --slider-thumb-opacity-active: 1;
+  --slider-thumb-background: #ffffff;
+  --slider-thumb-background-hover: #ffffff;
+  --slider-thumb-border-width: 4px;
+  --slider-thumb-border-color: var(--wiki-progressive);
+  --slider-thumb-shadow: none;
+  --slider-thumb-shadow-hover: none;
+  --slider-thumb-shadow-active: none;
+  --slider-fill-background: var(--wiki-progressive);
+}
+input[type='range']::-webkit-slider-thumb {
+  box-sizing: border-box;
+}
+input[type='range']:not(:disabled)::-webkit-slider-thumb:hover,
+input[type='range']:not(:disabled)::-webkit-slider-thumb:active {
+  border-color: var(--wiki-progressive-hover);
+}
+
+/* Colour swatches: square, not round */
+body {
+  --swatch-radius: 2px;
+}
+.pickr .pcr-button,
+.pickr .pcr-button::before,
+.pickr .pcr-button::after {
+  border-radius: 2px;
+}
+
+/* Optional: hide interface elements (Style Settings → Hide interface elements) */
+.hide-vault-profile .workspace-sidedock-vault-profile,
+.hide-right-sidebar-toggle .sidebar-toggle-button.mod-right,
+.hide-status-bar .status-bar,
+.hide-search-suggestions .suggestion-container.mod-search-suggestion,
+.hide-result-counts :is(.backlink-pane, .outgoing-link-pane, .search-result-container) .tree-item-flair,
+.hide-prompt-instructions .prompt-instructions,
+.hide-file-explorer-header .workspace-leaf-content[data-type="file-explorer"] .nav-header {
+  display: none;
+}
+body.hide-scrollbars {
+  --scrollbar-native-width: none;
+}
+.hide-scrollbars ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Selected item: one style for file explorer, outline, bookmarks, settings nav.
+   Shaded (default) uses Obsidian's light hover shade; Bold has no background. */
+body {
+  --wiki-active-bg: var(--background-modifier-hover);
+  --wiki-active-weight: inherit;
+  --nav-item-color-active: var(--text-normal);
+  --nav-item-background-active: var(--wiki-active-bg);
+  --nav-item-weight-active: var(--wiki-active-weight);
+}
+body.wiki-active-bold {
+  --wiki-active-bg: transparent;
+  --wiki-active-weight: bold;
+}
+body:not(.is-grabbing) .tree-item-self.is-active:hover {
+  background-color: var(--nav-item-background-active) !important;
+}
+
+
+
 /* @settings
 
 name: 🌐 Wikipedia
 id: wikipedia-theme
 settings:
-  - 
-    id: custom-accent
-    type: class-toggle
-    title: Use Custom Accent Color
-    default: false
-  -
-    id: layout-heading
-    title: Layout
-    type: heading
-    level: 2
-    collapsed: true
-  -
-    id: file-line-width
-    title: Readable Line Length
-    type: variable-text
-    description: This is how wide a note will appear when Readable Line Length is turned on. For most themes, this value is somewhere around 700px.
-    default: 100%
-  -
-    id: ribbon-heading
-    title: Ribbon
-    type: heading
-    level: 3
-    collapsed: true
-  -
-    id: ribbon-style
-    title: Ribbon Style
-    type: class-select
-    allowEmpty: false
-    default: ribbon-default
-    options: 
-      - 
-        label: Always Show 
-        value: ribbon-default
-      -
-        label: Show on Hover
-        value: ribbon-hover
-      -
-        label: Fully Hidden (will not show on hover; toggle using a hotkey or command palette)
-        value: ribbon-hide
-  -
-    id: frontmatter-heading
-    title: Frontmatter
-    type: heading
-    level: 3
-    collapsed: true
-  -
-    id: hide-frontmatter
-    title: Hide Frontmatter
-    type: class-toggle
-    default: false
-  -
-    id: frontmatter-style
-    title: Frontmatter Style
-    default: frontmatter-default
-    type: class-select
-    options: 
-      -
-        label: Infobox
-        value: frontmatter-default
-      -
-        label: Blockquote
-        value: frontmatter-blockquote
-  -
-    id: typography-heading
-    title: Typography
-    type: heading
-    level: 2
-    collapsed: true
-  -
-    id: headings-heading
-    title: Headings
-    type: heading
-    level: 3
-    collapsed: true
-  -
-    id: heading-6-heading
-    title: H6
-    type: heading
-    level: 4
-    collapsed: true
-  -
-    id: special-h6
-    title: Infobox Header 6
-    type: class-toggle
-    description: Style Header 6 to be smaller and have a pale background, like the headings inside a Wikipedia infobox.
-    default: true
-  -
-    id: infoboxes-heading
-    title: Callouts, Blockquotes, & Infoboxes
-    type: heading
-    level: 3
-    collapsed: true
-  -
-    id: infobox-width
-    title: Infobox Width
-    description: This will affect the width of all components styled like Wikipedia infoboxes. Depending on your settings, these may include Info callouts, frontmatter, and images.
-    type: variable-text
-    default: 25%
-  -
-    id: callouts-heading
-    title: Callouts
-    type: heading
-    level: 4
-    collapsed: true
-  -
-    id: hide-callout-icons
-    type: class-toggle
-    title: Hide Callout Icons
-    default: false
-  -
-    id: hide-callout-title
-    type: class-toggle
-    title: Hide Info Callout Title
-    default: false
-  -
-    id: info-normal
-    title: Don't Render Info Callout as an Infobox
-    description: By default, the theme renders any Info callout as a Wikipedia infobox. Toggle this setting to render Info callouts like a regular callout instead.
-    type: class-toggle
-    default: false
-  -
-    id: other-elements-heading
-    title: Misc
-    type: heading
-    level: 2
-    collapsed: true
-  -
-    id: images-heading
-    title: Images
-    type: heading
-    level: 3
-    collapsed: true
-  -
-    id: image-placement
-    title: Image Placement
-    type: class-select
-    description: Control where images are placed on the page
-    default: float-right
-    options: 
-      -
-        label: Don't Float
-        value: no-float
-      -
-        label: Float Right (default)
-        value: float-right
-      -
-        label: Float Left
-        value: float-left
-      -
-        label: Center
-        value: float-center
-  -
-    id: image-width
-    title: Image Width
-    type: variable-select
-    default: var(--infobox-width)
-    options:
-      -
-        label: Unset
-        value: unset
-      -
-        label: Infobox Width
-        value: var(--infobox-width)
-      -
-        label: Custom
-        value: var(--img-width-custom)
-  -
-    id: img-width-custom
-    title: Custom Image Width
-    type: variable-text
-    description: Examples - 300px, 9em
-    default: 300px
-
-  -
-    id: img-max-width
-    default: 55
-    format: "%"
-    type: variable-number-slider
-    title: Image Max Width
-    description: Set a max width for images (percentage)
-    min: 25
-    max: 100
-
-
-
+- id: custom-accent
+  type: class-toggle
+  title: Use my accent color
+  description: Off uses Wikipedia's link blue. On uses the accent color chosen in Settings → Appearance.
+  default: false
+- id: active-item-style
+  title: Selected item style
+  description: How the current item is marked in the file explorer, outline, bookmarks and the settings sidebar. Shaded keeps text width fixed; Bold matches Wikipedia's table of contents but makes the text slightly wider.
+  type: class-select
+  allowEmpty: false
+  default: wiki-active-shaded
+  options:
+  - label: Shaded background
+    value: wiki-active-shaded
+  - label: Bold text
+    value: wiki-active-bold
+- id: layout-heading
+  title: Layout
+  type: heading
+  level: 2
+  collapsed: true
+- id: file-line-width
+  title: Note width
+  type: variable-text
+  description: Width of the note text when "Readable line length" is on in Settings → Editor. Examples - 100%, 700px, 45em.
+  default: 100%
+- id: ribbon-style
+  title: Ribbon (left icon bar)
+  type: class-select
+  allowEmpty: false
+  default: ribbon-default
+  options:
+  - label: Always show
+    value: ribbon-default
+  - label: Show on hover
+    value: ribbon-hover
+  - label: Hide (toggle with a hotkey or the command palette)
+    value: ribbon-hide
+- id: wiki-nav-indent
+  title: File explorer indent per folder level
+  description: How far each nested folder is shifted to the right. Obsidian's default is 16px.
+  type: variable-number-slider
+  default: 16
+  min: 4
+  max: 24
+  step: 1
+  format: px
+- id: hide-settings-icons
+  title: Hide icons in the settings sidebar
+  description: Show the settings sections as a plain list of links, without icons.
+  type: class-toggle
+  default: false
+- id: hide-ui-heading
+  title: Hide interface elements
+  type: heading
+  level: 2
+  collapsed: true
+- id: hide-file-explorer-header
+  title: File explorer toolbar
+  type: class-toggle
+  description: The row of buttons above the file list - new note, new folder, sort, collapse.
+  default: false
+- id: hide-right-sidebar-toggle
+  title: Right sidebar button
+  type: class-toggle
+  description: The left sidebar button stays.
+  default: false
+- id: hide-vault-profile
+  title: Vault name at the bottom left
+  type: class-toggle
+  default: false
+- id: hide-status-bar
+  title: Status bar
+  type: class-toggle
+  description: Word count and plugin indicators at the bottom right.
+  default: false
+- id: hide-scrollbars
+  title: Scrollbars
+  type: class-toggle
+  description: Scrolling still works with the trackpad or mouse wheel.
+  default: false
+- id: hide-search-suggestions
+  title: Search suggestions
+  type: class-toggle
+  description: The list of search operators shown while typing in search.
+  default: false
+- id: hide-result-counts
+  title: Result counts
+  type: class-toggle
+  description: The numbers next to files in search, backlinks and outgoing links.
+  default: false
+- id: hide-prompt-instructions
+  title: Keyboard hints in prompts
+  type: class-toggle
+  description: The hint row at the bottom of the command palette and quick switcher.
+  default: false
+- id: frontmatter-heading
+  title: Properties (frontmatter)
+  type: heading
+  level: 2
+  collapsed: true
+- id: hide-frontmatter
+  title: Hide properties in reading view
+  type: class-toggle
+  default: false
+- id: frontmatter-style
+  title: Properties style
+  description: Infobox shows properties as a box on the right, like a Wikipedia infobox. Blockquote shows them as an indented block above the note.
+  default: frontmatter-default
+  type: class-select
+  options:
+  - label: Infobox
+    value: frontmatter-default
+  - label: Blockquote
+    value: frontmatter-blockquote
+- id: infoboxes-heading
+  title: Infoboxes and callouts
+  type: heading
+  level: 2
+  collapsed: true
+- id: infobox-width
+  title: Infobox width
+  description: Width of everything drawn as an infobox - Info callouts, properties in Infobox style, and images with "Image width" set to "Infobox width". Examples - 25%, 300px.
+  type: variable-text
+  default: 25%
+- id: info-normal
+  title: Show Info callouts as normal callouts
+  description: By default, an Info callout (> [!info]) is drawn as a Wikipedia infobox on the right. Turn this on to draw it like any other callout.
+  type: class-toggle
+  default: false
+- id: hide-callout-title
+  type: class-toggle
+  title: Hide the title of Info callouts
+  default: false
+- id: hide-callout-icons
+  type: class-toggle
+  title: Hide callout icons
+  default: false
+- id: plain-h6
+  title: Plain heading 6
+  type: class-toggle
+  description: Off shows heading 6 as small text on a pale background, like the section headers inside a Wikipedia infobox. On shows it as an ordinary heading.
+  default: false
+- id: images-heading
+  title: Images
+  type: heading
+  level: 2
+  collapsed: true
+- id: image-placement
+  title: Image position
+  type: class-select
+  description: Where images appear in reading view. Right and Left let text wrap around the image, like thumbnails on Wikipedia. A single image can override this with its alt text - right, left, or no-float.
+  default: float-right
+  options:
+  - label: Right, text wraps around (default)
+    value: float-right
+  - label: Left, text wraps around
+    value: float-left
+  - label: Centered on its own line
+    value: float-center
+  - label: Left on its own line
+    value: no-float
+- id: image-width
+  title: Image width
+  type: variable-select
+  default: var(--infobox-width)
+  options:
+  - label: Original size
+    value: unset
+  - label: Same as infobox width
+    value: var(--infobox-width)
+  - label: Custom
+    value: var(--img-width-custom)
+- id: img-width-custom
+  title: Custom image width
+  type: variable-text
+  description: Used when "Image width" is Custom. Examples - 300px, 9em.
+  default: 300px
+- id: img-max-width
+  default: 55
+  format: '%'
+  type: variable-number-slider
+  title: Maximum image width
+  description: Upper limit for image width, as a percentage of the note width. Set to 100 for full-width images.
+  min: 25
+  max: 100
 
 */
