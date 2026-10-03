@@ -35,8 +35,11 @@ body {
 }
 
 /* ----- inline title ----- */
+body {
+  --wiki-title-size: 2.3;
+}
 .inline-title {
-  font-size: 2.3em;
+  font-size: calc(var(--wiki-title-size) * 1em);
   border-bottom: 1px solid var(--background-modifier-border);
   padding: 0px;
   font-family: var(--h1-font);
@@ -1272,6 +1275,62 @@ body.hide-scrollbars {
   display: none;
 }
 
+/* Optional text and layout preferences (Style Settings → Text, Layout) */
+.wiki-font-serif {
+  --font-text-theme: 'Charter', 'Georgia', 'Linux Libertine', serif;
+}
+.no-title-underline .inline-title {
+  border-bottom: none;
+}
+.compact-h2 .markdown-rendered h2 {
+  margin-top: 1em;
+  padding-bottom: 0.25em;
+  margin-bottom: 0.25em;
+  line-height: 1.3;
+}
+.compact-h2 .markdown-embed-title {
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.fade-block-ids .markdown-rendered .block-id {
+  opacity: 0;
+  font-size: 0.7em;
+  transition: opacity 0.15s;
+}
+.fade-block-ids .markdown-rendered :hover > .block-id {
+  opacity: 0.3;
+}
+.quiet-tags .markdown-rendered .tag,
+.quiet-tags a.tag {
+  color: var(--text-muted);
+  background-color: transparent;
+  font-size: 0.85em;
+  padding: 0;
+  border-radius: 0;
+  text-decoration: none;
+}
+.quiet-tags .markdown-rendered .tag:hover,
+.quiet-tags a.tag:hover {
+  color: var(--text-accent);
+  background-color: transparent;
+  text-decoration: underline;
+}
+.quiet-tags .cm-hashtag,
+.quiet-tags .cm-tag {
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 0.85em;
+}
+.left-toggle-at-edge .sidebar-toggle-button.mod-left {
+  order: -1;
+  margin-right: 0;
+}
+.left-toggle-at-edge .workspace-tab-header-container {
+  justify-content: flex-start;
+}
+.left-toggle-at-edge .mod-left-split .view-header-nav-buttons {
+  justify-content: flex-start;
+}
+
 /* Selected item: one style for file explorer, outline, bookmarks, settings nav.
    Shaded (default) uses Obsidian's light hover shade; Bold has no background. */
 body {
@@ -1347,6 +1406,54 @@ settings:
   title: Hide icons in the settings sidebar
   description: Show the settings sections as a plain list of links, without icons.
   type: class-toggle
+  default: false
+- id: left-toggle-at-edge
+  title: Left sidebar button at the window edge
+  type: class-toggle
+  description: Keeps the button that opens the left sidebar at the far left of the tab bar.
+  default: false
+- id: text-heading
+  title: Text
+  type: heading
+  level: 2
+  collapsed: true
+- id: body-font
+  title: Body font
+  type: class-select
+  allowEmpty: false
+  default: wiki-font-sans
+  options:
+  - label: Sans-serif, like Wikipedia (default)
+    value: wiki-font-sans
+  - label: Serif (Charter), pairs well with LaTeX
+    value: wiki-font-serif
+- id: wiki-title-size
+  title: Note title size
+  description: Size of the title shown above each note, in em. The theme default is 2.3.
+  type: variable-number-slider
+  default: 2.3
+  min: 1.5
+  max: 6
+  step: 0.1
+- id: no-title-underline
+  title: Remove the line under the note title
+  type: class-toggle
+  description: Wikipedia draws a line under the page title. Turn on to remove it.
+  default: false
+- id: compact-h2
+  title: Compact heading 2
+  type: class-toggle
+  description: Less space above and below heading 2 in reading view.
+  default: false
+- id: quiet-tags
+  title: Quiet tags
+  type: class-toggle
+  description: Show #tags as small grey text instead of coloured links.
+  default: false
+- id: fade-block-ids
+  title: Fade block IDs
+  type: class-toggle
+  description: Hide ^block-ids in reading view until the paragraph is hovered.
   default: false
 - id: hide-ui-heading
   title: Hide interface elements
