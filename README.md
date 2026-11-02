@@ -1,5 +1,10 @@
 ![](assets/newest.png) 
 
+> [!NOTE]
+> **Maintenance.** This theme was created by [Ha'ani Whitlock (Bluemoondragon07)](https://github.com/Bluemoondragon07), who wrote the original [Wikipedia Theme](https://github.com/Bluemoondragon07/Wikipedia-Theme). The original repository has had no updates since December 2024, and the author did not respond to the [offer to take over maintenance](https://github.com/Bluemoondragon07/Wikipedia-Theme/issues/29) within 30 days, so the theme is now maintained by [Bingjie Li (Bingjie9978)](https://github.com/Bingjie9978) under the original MIT license, following Obsidian's [developer policy on forks](https://docs.obsidian.md/community-directory/developer-policies). If Ha'ani wants to resume maintenance, they are welcome to.
+>
+> Thanks to [saberzero1](https://github.com/saberzero1) for the Obsidian 1.13 callout fix.
+
 # Familiar Look
 Make your vault look like your own personal Wikipedia! This theme styles images, headings, and even the sidebar in the classic style of your favourite encyclopedia.
 
@@ -44,7 +49,16 @@ You can also force any callout float with the alts `left`, `right`, or `info` (s
 ![center](books.png)
 ```
 
-# Update
+# Changelog
+
+## 2.1.0
+- Works with Obsidian 1.13+ (callout colors).
+- Settings window, file explorer, outline and bookmarks restyled to match the theme.
+- New Style Settings options: body font (sans or serif), note title size and underline, compact heading 2, quiet tags, fading block IDs, file explorer indent, and options to hide individual interface elements.
+- Style Settings reorganised with clearer wording.
+- Fixes: heading 6 infobox style works without Style Settings (#6); tables no longer break words mid-word (#25); `![[image.png|100]]` sizes are respected (#3, #26); infoboxes and images are full width on phones (#23); hiding properties works with Obsidian's current properties view.
+
+## 2.0 (original author)
 - All images will now float except those placed inside callouts.
   - An image directly after another image will float to the left instead of the right.
 - The info callout is now the only callout that will float to the right. For simplicity, infobox blockquotes can no longer float to the right, either.
@@ -55,7 +69,7 @@ You can also force any callout float with the alts `left`, `right`, or `info` (s
   - Modifications to Headings
 - Images now have the signature Wikipedia border around them.
 
-# Notes
+# Notes from the original author
 - I'm not a theme developer or anything, just a 15-year-old who likes to waste time with CSS.
 - A good chunk of the CSS *was* actually taken directly from Wikipedia and mapped to components in Obsidian.
 - Feel free to make pull requests or suggestions for this theme. Or remix it into your own thing. It's under the MIT license.
